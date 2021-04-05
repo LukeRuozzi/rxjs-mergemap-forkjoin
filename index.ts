@@ -28,7 +28,8 @@ function getUserTodos(user: User): Observable<User> {
   console.log("getTodos for user ", user.name);
   return todoObs.pipe(
     map(todos => {
-      user.todos = todos;
+      user.todos = [];
+      user.todos = user.todos.concat(todos);
       return user;
     })
   );
@@ -41,10 +42,16 @@ getUsers()
       return forkJoin(...subReqs);
     })
   )
-  .subscribe(res => {
+  .subscribe((res: User[]) => {
     console.log(res);
 
-    res.forEach(user => {
-      document.getElementById("users").innerHTML += "<p>" + user.name + "</p>";
+    let html = "";
+    res.forEach((user: User) => {
+      html += "<p>" + user.name;
+      user.todos.forEach((todo: Todo) => {
+        html += "<p style='margin-left: 10px;'>" + todo.title + "</p>";
+      });
+      html += "</p>";
     });
+    document.getElementById("users").innerHTML = html;
   });
